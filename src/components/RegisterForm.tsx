@@ -1,18 +1,19 @@
+"use client";
 import React, { useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 
 const RegisterForm = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
 
-        const { user, error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
             email,
             password,
         });
@@ -21,7 +22,7 @@ const RegisterForm = () => {
             setError(error.message);
         } else {
             // Handle successful registration (e.g., redirect or show a success message)
-            console.log('User registered:', user);
+            console.log('User registered:', data.user);
         }
 
         setLoading(false);

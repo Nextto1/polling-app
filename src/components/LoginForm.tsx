@@ -1,22 +1,30 @@
+"use client";
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 
 const LoginForm: React.FC = () => {
-    const { signIn } = useAuth()!;
+    const auth = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
-    const handleLogin = async (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
 
+        if (!auth || !auth.signIn) {
+            setError("Authentication service unavailable.");
+            setLoading(false);
+            return;
+        }
+
         try {
-            await signIn(email, password);
+            await auth.signIn(email, password);
+            // Optionally, redirect here after successful login
         } catch (err: any) {
-            setError(err.message);
+            setError(err?.message || "Login failed. Please try again.");
         }
 
         setLoading(false);
